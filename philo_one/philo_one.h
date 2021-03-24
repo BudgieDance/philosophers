@@ -4,8 +4,10 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <stdio.h>
 
 struct s_info;
+struct s_philo;
 struct timeval timestamp;
 
 typedef struct	s_philo
@@ -14,9 +16,13 @@ typedef struct	s_philo
 	int				left_index;
 	int				right_index;
 	int				finished_meals;
+	int				state;
 	long int		action_time;
 	long int		death_time;
 	long int		next_death_time;
+	pthread_mutex_t	dead;
+	pthread_mutex_t	permission;
+	pthread_mutex_t resume;
 	struct s_info	*general_info;
 }				t_philo;
 
@@ -33,15 +39,6 @@ typedef struct	s_info
 	pthread_mutex_t	*forks;
 	t_philo			*philo;
 }				t_info;
-
-typedef enum	e_status
-{
-	TOOK_FORK,
-	EATING,
-	SLEEPING,
-	THINKING,
-	DEAD,
-}				t_status;
 
 typedef enum	e_error
 {
@@ -80,5 +77,5 @@ void			philo_sleep(t_philo *philo);
 /*
 **OUTPUT
 */
-void			philo_status_print(t_philo *philo, int status);
+void			print_output(t_philo *philo, char *output);
 #endif

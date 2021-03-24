@@ -5,7 +5,6 @@ HEADER = philo_three.h
 SRC = action.c \
 	initialize.c \
 	main.c \
-	output.c \
 	threads.c \
 	utils.c \
 	utils2.c 

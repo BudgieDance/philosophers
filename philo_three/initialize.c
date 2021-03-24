@@ -34,6 +34,8 @@ void	add_philos(t_info *info)
 		info->philo[i].name = i + 1;
 		info->philo[i].finished_meals = 0;
 		info->philo[i].general_info = info;
+		info->philo[i].dead = sem_open("dead", O_CREAT, 0644, 1);
+		sem_unlink("dead");
 		i++;
 	}
 }
@@ -49,8 +51,12 @@ int		open_semaphores(t_info *info)
 	info->output_sem = sem_open(OUTPUT_SEM, O_CREAT, 0644, 1);
 	if (info->output_sem == SEM_FAILED)
 		return (SEM_ERROR);
-	info->finished_meals = sem_open(FINISHED_MEALS, O_CREAT, 0644, 0);
-	if (info->finished_meals == SEM_FAILED)
+	info->hungry_philos = sem_open(HUNGRY_PHILOS, O_CREAT, 0644, 0);
+	if (info->hungry_philos == SEM_FAILED)
+		return (SEM_ERROR);
+	info->eat_permission = sem_open(EAT_PERM, O_CREAT, 0644,
+									(info->philos_number / 2));
+	if (info->eat_permission == SEM_FAILED)
 		return (SEM_ERROR);
 	return (0);
 }

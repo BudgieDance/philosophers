@@ -32,6 +32,11 @@ void	add_philos(t_info *info)
 		info->philo[i].left_index = i;
 		info->philo[i].right_index = (i + 1) % info->philos_number;
 		info->philo[i].general_info = info;
+		pthread_mutex_init(&(info->philo[i].dead), NULL);
+		pthread_mutex_init(&(info->philo[i].permission), NULL);
+		pthread_mutex_lock(&(info->philo[i].permission));
+		pthread_mutex_init(&(info->philo[i].resume), NULL);
+		pthread_mutex_lock(&(info->philo[i].resume));
 		i++;
 	}
 }

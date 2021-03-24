@@ -9,10 +9,12 @@
 # include <semaphore.h>
 # include <sys/types.h>
 # include <signal.h>
+# include <stdio.h>
 # define FORK_SEM "forks"
 # define MAIN_SEM "main"
 # define OUTPUT_SEM "output"
-# define FINISHED_MEALS "finished_meals"
+# define HUNGRY_PHILOS "hungry philos"
+# define EAT_PERM "eat_permission"
 
 struct s_info;
 struct timeval timestamp;
@@ -25,6 +27,7 @@ typedef struct	s_philo
 	long int		action_time;
 	long int		death_time;
 	long int		next_death_time;
+	sem_t			*dead;
 	struct s_info	*general_info;
 }				t_philo;
 
@@ -37,21 +40,13 @@ typedef struct	s_info
 	int				meals_to_eat;
 	int				count_meals;
 	long int		start_time;
+	sem_t			*eat_permission;
 	sem_t			*fork_sem;
 	sem_t			*output_sem;
 	sem_t			*main_sem;
-	sem_t			*finished_meals;
+	sem_t			*hungry_philos;
 	t_philo			*philo;
 }				t_info;
-
-typedef enum	e_status
-{
-	TOOK_FORK,
-	EATING,
-	SLEEPING,
-	THINKING,
-	DEAD,
-}				t_status;
 
 typedef enum	e_error
 {
@@ -66,12 +61,9 @@ typedef enum	e_error
 */
 size_t			ft_strlen(const char *s);
 int				ft_atoi(const char *nptr);
-char			*ft_itoa(int n);
 void			ft_putstr(char *s);
 void			*ft_memcpy(void *dest, const void *src, size_t n);
 char			*ft_strdup(const char *s);
-void			ft_putnbr(int n);
-void			ft_putchar(char c);
 long int		get_time(void);
 
 /*
@@ -90,5 +82,5 @@ void			philo_sleep(t_philo *philo);
 /*
 **OUTPUT
 */
-void			philo_status_print(t_philo *philo, int status);
+void			print_output(t_philo *philo, char *output);
 #endif

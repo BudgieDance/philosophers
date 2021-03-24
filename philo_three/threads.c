@@ -9,13 +9,11 @@ void	*all_philos_finished(void *arg)
 	i = 0;
 	while (i < info->philos_number)
 	{
-		sem_wait(info->finished_meals);
+		sem_wait(info->hungry_philos);
 		i++;
 	}
 	sem_wait(info->output_sem);
-	ft_putstr("All philosophers ate at least ");
-	ft_putnbr(info->meals_to_eat);
-	ft_putstr(" times. Exit program\n");
+	printf("All philosophers ate at least %d times\n", info->meals_to_eat);
 	sem_post(info->main_sem);
 	return (NULL);
 }
@@ -27,13 +25,19 @@ void	*monitor_health(void *arg)
 	philo = (t_philo*)arg;
 	while (1)
 	{
+		sem_wait(philo->dead);
 		philo->death_time = get_time();
 		if (philo->death_time > philo->next_death_time)
 		{
-			philo_status_print(philo, DEAD);
+			sem_wait(philo->general_info->output_sem);
+			philo->death_time = philo->death_time -
+					philo->general_info->start_time;
+			printf("%ld %d is dead\n", philo->death_time, philo->name);
 			sem_post(philo->general_info->main_sem);
 			return (NULL);
 		}
+		sem_post(philo->dead);
+		usleep(3000);
 	}
 	return (NULL);
 }
@@ -52,8 +56,10 @@ int		philo_main(t_philo *philo)
 		philo_take_forks(philo);
 		philo_eat(philo);
 		philo_sleep(philo);
-		philo->action_time = get_time();
-		philo_status_print(philo, THINKING);
+		sem_wait(philo->general_info->output_sem);
+		philo->action_time = get_time() - philo->general_info->start_time;
+		print_output(philo, "is thinking");
+		sem_post(philo->general_info->output_sem);
 	}
 	return (0);
 }
@@ -80,7 +86,6 @@ int		create_philos_threads(t_info *info)
 			exit_status = philo_main(&(info->philo[i]));
 			exit(exit_status);
 		}
-		usleep(500);
 		i++;
 	}
 	return (0);

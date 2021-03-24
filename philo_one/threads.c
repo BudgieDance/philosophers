@@ -13,11 +13,10 @@ void	*all_philos_finished(void *arg)
 			i++;
 		else
 			i = 0;
+		usleep(3000);
 	}
 	pthread_mutex_lock(&(info->output));
-	ft_putstr("All philosophers ate at least ");
-	ft_putnbr(info->meals_to_eat);
-	ft_putstr(" times. Exit program\n");
+	printf("All philosophers ate at least %d times\n", info->meals_to_eat);
 	pthread_mutex_unlock(&(info->main_exit));
 	return (NULL);
 }
@@ -29,13 +28,18 @@ void	*monitor_health(void *arg)
 	philo = (t_philo*)arg;
 	while (1)
 	{
+		pthread_mutex_lock(&(philo->dead));
 		philo->death_time = get_time();
 		if (philo->death_time > philo->next_death_time)
 		{
-			philo_status_print(philo, DEAD);
+			pthread_mutex_lock(&(philo->general_info->output));
+			philo->death_time = philo->death_time - philo->general_info->start_time;
+			printf("%ld %d is dead\n", philo->death_time, philo->name);
 			pthread_mutex_unlock(&(philo->general_info->main_exit));
 			return (NULL);
 		}
+		pthread_mutex_unlock(&(philo->dead));
+		usleep(3000);
 	}
 	return (NULL);
 }
@@ -56,8 +60,37 @@ void	*philo_main(void *arg)
 		philo_take_forks(philo);
 		philo_eat(philo);
 		philo_sleep(philo);
-		philo->action_time = get_time();
-		philo_status_print(philo, THINKING);
+		pthread_mutex_lock(&(philo->general_info->output));
+		philo->action_time = get_time() - philo->general_info->start_time;
+		print_output(philo, "is thinking");
+		pthread_mutex_unlock(&(philo->general_info->output));
+	}
+	return (NULL);
+}
+
+void	*control_philos(void *arg)
+{
+	t_info *info;
+	int i;
+
+	info = (t_info*)arg;
+	info->start_time = get_time();
+	while(1)
+	{
+		i = 0;
+		while(i < info->philos_number)
+		{
+			pthread_mutex_unlock(&(info->philo[i].permission));
+			pthread_mutex_lock(&(info->philo[i].resume));
+			i = i + 2;
+		}
+		i = 1;
+		while(i < info->philos_number)
+		{
+			pthread_mutex_unlock(&(info->philo[i].permission));
+			pthread_mutex_lock(&(info->philo[i].resume));
+			i = i + 2;
+		}
 	}
 	return (NULL);
 }
@@ -83,12 +116,13 @@ int		create_philos_threads(t_info *info)
 			return (THREAD_ERROR);
 		i++;
 	}
+	pthread_create(&thread, NULL, &control_philos, info);
+	pthread_detach(thread);
 	return (0);
 }
 
 int		create_threads(t_info *info)
 {
-	info->start_time = get_time();
 	if (create_philos_threads(info) != 0)
 		return (THREAD_ERROR);
 	return (0);

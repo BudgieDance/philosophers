@@ -45,15 +45,6 @@ typedef struct	s_info
 	t_philo			*philo;
 }				t_info;
 
-typedef enum	e_status
-{
-	TOOK_FORK,
-	EATING,
-	SLEEPING,
-	THINKING,
-	DEAD,
-}				t_status;
-
 typedef enum	e_error
 {
 	INVALID_ARGUMENTS = 1,

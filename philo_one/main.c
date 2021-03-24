@@ -4,18 +4,20 @@ void	free_info(t_info *info)
 {
 	int i;
 
-	if (info->philo != NULL)
-		free(info->philo);
 	if (info->forks != NULL)
 	{
 		i = 0;
 		while (i < info->philos_number)
 		{
-			pthread_mutex_destroy(&(info->forks[i]));
+			pthread_mutex_destroy(&(info->philo[i].dead));
+			pthread_mutex_destroy(&(info->philo[i].permission));
+			pthread_mutex_destroy(&(info->philo[i].resume));
 			i++;
 		}
 		free(info->forks);
 	}
+	if (info->philo != NULL)
+		free(info->philo);
 	pthread_mutex_destroy(&(info->output));
 	pthread_mutex_destroy(&(info->main_exit));
 }
