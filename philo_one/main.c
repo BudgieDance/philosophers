@@ -9,6 +9,7 @@ void	free_info(t_info *info)
 		i = 0;
 		while (i < info->philos_number)
 		{
+			pthread_mutex_destroy(&(info->forks[i]));
 			pthread_mutex_destroy(&(info->philo[i].dead));
 			pthread_mutex_destroy(&(info->philo[i].permission));
 			pthread_mutex_destroy(&(info->philo[i].resume));
@@ -52,7 +53,7 @@ int		main(int argc, char **argv)
 	ret_value = fill_info(&info, argc, argv);
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
-	ret_value = create_threads(&info);
+	ret_value = create_philos_threads(&info);
 	if (ret_value != 0)
 		return (ft_error("Error: ", &info, ret_value));
 	pthread_mutex_lock(&(info.main_exit));

@@ -13,7 +13,6 @@ void	philo_take_forks(t_philo *philo)
 	philo->action_time = get_time() - philo->general_info->start_time;
 	print_output(philo, "took a fork");
 	pthread_mutex_unlock(&(philo->general_info->output));
-
 	pthread_mutex_lock(&(philo->general_info->forks[philo->right_index]));
 	pthread_mutex_lock(&(philo->general_info->output));
 	philo->action_time = get_time() - philo->general_info->start_time;

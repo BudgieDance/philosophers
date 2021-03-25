@@ -65,7 +65,7 @@ long int		get_time(void);
 **INITIALIZE
 */
 int				fill_info(t_info *info, int argc, char **argv);
-int				create_threads(t_info *info);
+int				create_philos_threads(t_info *info);
 
 /*
 **ACTION

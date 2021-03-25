@@ -32,32 +32,6 @@ void		*ft_memcpy(void *dest, const void *src, size_t n)
 	return (dest);
 }
 
-void		ft_putnbr(int n)
-{
-	if (n < 0)
-	{
-		if (n == -2147483648)
-		{
-			write(1, "-2147483648", 11);
-			return ;
-		}
-		n = n * -1;
-		ft_putchar('-');
-	}
-	if (n < 10)
-		ft_putchar(n + 48);
-	else
-	{
-		ft_putnbr(n / 10);
-		ft_putnbr(n % 10);
-	}
-}
-
-void		ft_putchar(char c)
-{
-	write(1, &c, 1);
-}
-
 long int	get_time(void)
 {
 	struct timeval	tv;

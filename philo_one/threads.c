@@ -33,7 +33,8 @@ void	*monitor_health(void *arg)
 		if (philo->death_time > philo->next_death_time)
 		{
 			pthread_mutex_lock(&(philo->general_info->output));
-			philo->death_time = philo->death_time - philo->general_info->start_time;
+			philo->death_time = philo->death_time -
+					philo->general_info->start_time;
 			printf("%ld %d is dead\n", philo->death_time, philo->name);
 			pthread_mutex_unlock(&(philo->general_info->main_exit));
 			return (NULL);
@@ -70,22 +71,22 @@ void	*philo_main(void *arg)
 
 void	*control_philos(void *arg)
 {
-	t_info *info;
-	int i;
+	t_info	*info;
+	int		i;
 
 	info = (t_info*)arg;
 	info->start_time = get_time();
-	while(1)
+	while (1)
 	{
 		i = 0;
-		while(i < info->philos_number)
+		while (i < info->philos_number)
 		{
 			pthread_mutex_unlock(&(info->philo[i].permission));
 			pthread_mutex_lock(&(info->philo[i].resume));
 			i = i + 2;
 		}
 		i = 1;
-		while(i < info->philos_number)
+		while (i < info->philos_number)
 		{
 			pthread_mutex_unlock(&(info->philo[i].permission));
 			pthread_mutex_lock(&(info->philo[i].resume));
@@ -118,12 +119,5 @@ int		create_philos_threads(t_info *info)
 	}
 	pthread_create(&thread, NULL, &control_philos, info);
 	pthread_detach(thread);
-	return (0);
-}
-
-int		create_threads(t_info *info)
-{
-	if (create_philos_threads(info) != 0)
-		return (THREAD_ERROR);
 	return (0);
 }
